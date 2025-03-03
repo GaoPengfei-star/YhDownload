@@ -1,0 +1,10 @@
+requests
+aiohttp
+beautifulsoup4
+lxml
+tqdm
+tenacity
+m3u8
+loguru
+pycryptodome
+aiofiles
