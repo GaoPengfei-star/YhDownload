@@ -8,6 +8,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
 KEY = "57A891D97E332A9D"
+DEBUG = False
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -25,6 +26,9 @@ headers = {
 }
 
 def aes_decrypt(ciphertext_base64, key, iv):
+    if DEBUG:
+        print("Key:", key, "Iv:", iv, "Cipher_Text:", ciphertext_base64)
+
     # 将 Base64 编码的密文解码为字节串
     ciphertext = base64.b64decode(ciphertext_base64)
     
@@ -101,15 +105,18 @@ def main(url:str, save_path:str):
     key = KEY
     m3u8_url = get_m3u8_url(url)
     iv, enc_url = get_iv_url(m3u8_url)
-    dec_url = aes_decrypt(enc_url, key, iv)
-    download(dec_url, save_path)
+    if iv:
+        dec_url = aes_decrypt(enc_url, key, iv)
+        download(dec_url, save_path)
 
 # 示例使用
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--url", type=str, required=True)
     parser.add_argument("--save_path", type=str, required=True)
+    parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
 
     if args.url and args.save_path:
+        DEBUG = args.debug
         main(args.url, args.save_path)
